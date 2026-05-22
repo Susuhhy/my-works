@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>my works</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0e0e0e;
+    --surface: #161616;
+    --border: #2a2a2a;
+    --border-hover: #444;
+    --text-primary: #f0ede8;
+    --text-secondary: #888;
+    --text-muted: #555;
+    --accent: #c9f97a;
+    --accent-dim: rgba(201,249,122,0.08);
+    --accent-dim2: rgba(201,249,122,0.15);
+    --radius: 16px;
+    --font-serif: 'Instrument Serif', Georgia, serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── MAIN VIEW (list page) ── */
+  #mainView {
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+
+  #mainView.page-exit {
+    opacity: 0;
+    transform: translateY(-12px);
+    pointer-events: none;
+  }
+
+  /* ── PROFILE HEADER ── */
+  .profile-section {
+    position: relative;
+    z-index: 1;
+    padding: 56px 48px 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0;
+  }
+
+  .profile-inner {
+    display: flex;
+    align-items: flex-start;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+
+  .profile-avatar-wrap {
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .profile-avatar {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    object-fit: cover;
+    background: #1a1a1a;
+    display: block;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  .profile-avatar:hover { border-color: var(--accent); }
+
+  .avatar-edit-hint {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 22px;
+    height: 22px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: #0e0e0e;
+    pointer-events: none;
+  }
+
+  .avatar-placeholder {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    border: 2px dashed var(--border);
+    background: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--text-muted);
+  }
+
+  .avatar-placeholder:hover { border-color: var(--accent); }
+
+  .profile-info {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .profile-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .profile-name {
+    font-family: var(--font-serif);
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    cursor: pointer;
+    display: inline-block;
+  }
+
+  .profile-name span { color: var(--accent); font-style: normal; }
+
+  .profile-name-input {
+    font-family: var(--font-serif);
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--accent);
+    outline: none;
+    width: 100%;
+    max-width: 500px;
+    display: none;
+  }
+
+  .profile-role {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    display: inline-block;
+  }
+
+  .profile-role-input {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    outline: none;
+    font-family: var(--font-mono);
+    letter-spacing: 0.02em;
+    width: 100%;
+    max-width: 400px;
+    display: none;
+  }
+
+  .profile-bio {
+    margin-top: 14px;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.8;
+    cursor: pointer;
+    max-width: 560px;
+    display: block;
+  }
+
+  .profile-bio-input {
+    margin-top: 14px;
+    font-size: 12px;
+    color: var(--text-muted);
+    background: #1a1a1a;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    outline: none;
+    font-family: var(--font-mono);
+    line-height: 1.8;
+    width: 100%;
+    max-width: 560px;
+    padding: 8px 12px;
+    resize: none;
+    display: none;
+  }
+
+  .profile-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+  }
+
+  .profile-email-btn {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 5px 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.03em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .profile-email-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .profile-email-btn.copied {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-dim);
+  }
+
+  .profile-email-edit {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    outline: none;
+    width: 200px;
+    letter-spacing: 0.02em;
+    display: none;
+  }
+
+  .count-badge {
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+
+  .profile-print-btn {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 5px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+    margin-left: auto;
+  }
+
+  .profile-print-btn:hover {
+    border-color: var(--border-hover);
+    color: var(--text-primary);
+  }
+
+  /* edit mode label */
+  .edit-hint {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 6px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .profile-info:hover .edit-hint { opacity: 1; }
+
+  /* ── FILTER BAR ── */
+  .filter-bar {
+    position: relative;
+    z-index: 1;
+    padding: 28px 48px 28px;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .filter-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-right: 4px;
+  }
+
+  .tag-btn {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 99px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.03em;
+  }
+
+  .tag-btn:hover { border-color: var(--border-hover); color: var(--text-primary); }
+  .tag-btn.active { background: var(--accent); border-color: var(--accent); color: #0e0e0e; font-weight: 500; }
+
+  /* ── GRID ── */
+  .grid {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 48px 120px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    animation: fadeUp 0.5s ease both;
+    text-decoration: none;
+    display: block;
+    color: inherit;
+    position: relative;
+  }
+
+  .card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+  }
+
+  .card.hidden { display: none; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-thumb {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    display: block;
+    background: #1a1a1a;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .card:hover .card-thumb img { transform: scale(1.04); }
+
+  .thumb-placeholder {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: linear-gradient(135deg, #1a1a1a 0%, #222 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    letter-spacing: -0.02em;
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: #333;
+    transition: color 0.3s;
+  }
+
+  .card:hover .thumb-placeholder { color: #444; }
+
+  .card-body { padding: 20px 22px 22px; }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .card-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  .card-tag {
+    font-size: 10px;
+    padding: 3px 9px;
+    border-radius: 99px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .card-arrow {
+    font-size: 16px;
+    color: var(--text-muted);
+    transition: color 0.2s, transform 0.2s;
+    flex-shrink: 0;
+  }
+
+  .card:hover .card-arrow { color: var(--accent); transform: translate(2px, -2px); }
+
+  .card-title {
+    font-family: var(--font-serif);
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+  }
+
+  .card-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  /* bullet points in description */
+  .card-desc .bullet-line {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 3px;
+  }
+
+  .card-desc .bullet-dot {
+    color: var(--accent);
+    flex-shrink: 0;
+    margin-top: 2px;
+    font-size: 10px;
+  }
+
+  /* card delete btn */
+  .card-delete {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(14,14,14,0.85);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s, color 0.2s, border-color 0.2s;
+    z-index: 10;
+    backdrop-filter: blur(4px);
+  }
+
+  .card:hover .card-delete { opacity: 1; }
+  .card-delete:hover { color: #ff6b6b; border-color: #ff6b6b; }
+
+  /* card edit btn */
+  .card-edit {
+    position: absolute;
+    top: 10px;
+    right: 44px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(14,14,14,0.85);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s, color 0.2s, border-color 0.2s;
+    z-index: 10;
+    backdrop-filter: blur(4px);
+  }
+
+  .card:hover .card-edit { opacity: 1; }
+  .card-edit:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ── EMPTY STATE ── */
+  .empty {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 80px 0;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  /* ── FAB ── */
+  .add-fab {
+    position: fixed;
+    bottom: 36px;
+    right: 36px;
+    z-index: 100;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #0e0e0e;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 32px rgba(201,249,122,0.25);
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-weight: 300;
+  }
+
+  .add-fab:hover {
+    transform: scale(1.1);
+    box-shadow: 0 12px 40px rgba(201,249,122,0.35);
+  }
+
+  /* ── ADD/EDIT MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    backdrop-filter: blur(6px);
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: modalIn 0.25s ease;
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
+
+  .modal-title {
+    font-family: var(--font-serif);
+    font-size: 24px;
+    font-style: italic;
+  }
+
+  .modal-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .modal-close:hover { border-color: var(--border-hover); color: var(--text-primary); }
+
+  .form-group { margin-bottom: 18px; }
+
+  .form-label {
+    display: block;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .form-input, .form-textarea {
+    width: 100%;
+    background: #1a1a1a;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 14px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.2s;
+    resize: none;
+  }
+
+  .form-input:focus, .form-textarea:focus { border-color: var(--accent); }
+  .form-input::placeholder, .form-textarea::placeholder { color: var(--text-muted); }
+  .form-textarea { min-height: 100px; }
+
+  .form-hint {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 5px;
+    letter-spacing: 0.03em;
+  }
+
+  .form-submit {
+    width: 100%;
+    padding: 13px;
+    background: var(--accent);
+    color: #0e0e0e;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: opacity 0.2s;
+    letter-spacing: 0.03em;
+  }
+
+  .form-submit:hover { opacity: 0.88; }
+
+  .thumb-upload {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #1a1a1a;
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color 0.2s;
+    position: relative;
+  }
+
+  .thumb-upload:hover { border-color: var(--border-hover); }
+
+  .thumb-upload img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .thumb-upload-label { font-size: 12px; color: var(--text-muted); position: relative; z-index: 1; }
+  .thumb-upload-icon { font-size: 24px; position: relative; z-index: 1; }
+
+  /* ── PROJECT DETAIL PAGE ── */
+  #detailView {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 150;
+    overflow-y: auto;
+    opacity: 0;
+    transform: translateY(24px);
+    pointer-events: none;
+    transition: opacity 0.4s cubic-bezier(0.22,1,0.36,1), transform 0.4s cubic-bezier(0.22,1,0.36,1);
+  }
+
+  #detailView.open {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+  }
+
+  .detail-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 60px 48px 120px;
+  }
+
+  .detail-back {
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s;
+    border: none;
+    background: transparent;
+    font-family: var(--font-mono);
+    padding: 0;
+    margin-bottom: 48px;
+  }
+
+  .detail-back:hover { color: var(--text-primary); }
+
+  .detail-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .detail-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  .detail-tag {
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 99px;
+    border: 1px solid rgba(201,249,122,0.3);
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .detail-title {
+    font-family: var(--font-serif);
+    font-size: clamp(36px, 6vw, 68px);
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 32px;
+  }
+
+  .detail-hero {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    border-radius: 14px;
+    display: block;
+    margin-bottom: 40px;
+    border: 1px solid var(--border);
+    background: #1a1a1a;
+    overflow: hidden;
+  }
+
+  .detail-hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .detail-hero-placeholder {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: linear-gradient(135deg, #1a1a1a 0%, #222 100%);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 48px;
+    color: #2a2a2a;
+    margin-bottom: 40px;
+  }
+
+  .detail-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 36px 0;
+  }
+
+  .detail-desc-section {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.9;
+  }
+
+  .detail-bullet {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding: 14px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    transition: border-color 0.2s;
+  }
+
+  .detail-bullet:hover { border-color: var(--border-hover); }
+
+  .detail-bullet-dot {
+    color: var(--accent);
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    line-height: 1.9;
+  }
+
+  .detail-bullet-text {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.9;
+    flex: 1;
+  }
+
+  .detail-plain-text {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.9;
+    margin-bottom: 12px;
+  }
+
+  .detail-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 32px;
+    font-size: 13px;
+    color: var(--accent);
+    text-decoration: none;
+    border: 1px solid rgba(201,249,122,0.3);
+    padding: 10px 20px;
+    border-radius: 99px;
+    transition: all 0.2s;
+    letter-spacing: 0.03em;
+  }
+
+  .detail-link:hover {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+  }
+
+  /* ── PRINT STYLES ── */
+  @media print {
+    body { background: #fff !important; color: #000 !important; }
+    body::before { display: none; }
+    .add-fab, .card-delete, .card-edit, #detailView, .profile-print-btn { display: none !important; }
+    .profile-section { border: none; }
+    .card { break-inside: avoid; page-break-inside: avoid; border: 1px solid #ddd !important; }
+    .card:hover { transform: none; box-shadow: none; }
+    .grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    header, .filter-bar { display: none; }
+    :root {
+      --bg: #fff;
+      --surface: #f9f9f9;
+      --border: #ddd;
+      --text-primary: #111;
+      --text-secondary: #444;
+      --text-muted: #888;
+      --accent: #5a8a00;
+    }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .profile-section { padding: 36px 24px 28px; }
+    .profile-inner { gap: 20px; }
+    .profile-avatar, .avatar-placeholder { width: 68px; height: 68px; }
+    .filter-bar { padding: 20px 24px; }
+    .grid { padding: 24px 24px 80px; grid-template-columns: 1fr; }
+    .add-fab { bottom: 24px; right: 24px; }
+    .detail-inner { padding: 40px 24px 80px; }
+    .profile-meta-row { gap: 10px; }
+    .profile-print-btn { margin-left: 0; }
+  }
+
+  @media (max-width: 480px) {
+    .profile-section { padding: 28px 16px 24px; }
+    .filter-bar { padding: 16px 16px; }
+    .grid { padding: 16px 16px 80px; }
+    .detail-inner { padding: 32px 16px 80px; }
+    .modal { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════
+     MAIN LIST VIEW
+═══════════════════════════════════ -->
+<div id="mainView">
+
+  <!-- Profile Section -->
+  <div class="profile-section" id="profileSection">
+    <div class="profile-inner">
+      <!-- Avatar -->
+      <div class="profile-avatar-wrap" id="avatarWrap">
+        <div class="avatar-placeholder" id="avatarPlaceholder" title="클릭해서 사진 추가">+</div>
+        <img class="profile-avatar" id="avatarImg" src="" alt="profile" style="display:none" title="클릭해서 사진 변경">
+        <div class="avatar-edit-hint">✎</div>
+        <input type="file" id="avatarInput" accept="image/*" style="display:none">
+      </div>
+
+      <!-- Info -->
+      <div class="profile-info">
+        <div class="profile-eyebrow">✦ portfolio</div>
+
+        <!-- Name (click to edit) -->
+        <div>
+          <div class="profile-name" id="profileNameDisplay" title="클릭해서 편집">
+            my <span>works</span>
+          </div>
+          <input class="profile-name-input" id="profileNameInput" placeholder="이름을 입력하세요" type="text">
+        </div>
+
+        <!-- Role -->
+        <div>
+          <div class="profile-role" id="profileRoleDisplay" title="클릭해서 편집">클릭해서 직함/소개를 입력하세요</div>
+          <input class="profile-role-input" id="profileRoleInput" placeholder="예: Strategy Consultant · Seoul" type="text">
+        </div>
+
+        <!-- Bio -->
+        <div>
+          <div class="profile-bio" id="profileBioDisplay" title="클릭해서 편집">클릭해서 자기소개를 입력하세요</div>
+          <textarea class="profile-bio-input" id="profileBioInput" placeholder="간단한 자기소개를 입력하세요" rows="3"></textarea>
+        </div>
+
+        <div class="edit-hint">↑ 클릭해서 편집</div>
+
+        <!-- Meta row: email + count + print -->
+        <div class="profile-meta-row">
+          <!-- Email -->
+          <button class="profile-email-btn" id="emailBtn" title="클릭하면 복사">
+            <span>✉</span>
+            <span id="emailBtnText">이메일 추가</span>
+          </button>
+          <input class="profile-email-edit" id="emailInput" placeholder="your@email.com" type="email">
+
+          <div class="count-badge" id="countBadge">0 projects</div>
+
+          <button class="profile-print-btn" id="printBtn">⎙ print / PDF</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar" id="filterBar">
+    <span class="filter-label">filter</span>
+    <button class="tag-btn active" data-tag="all">all</button>
+  </div>
+
+  <!-- Grid -->
+  <div class="grid" id="grid">
+    <div class="empty" id="emptyState">
+      아직 추가된 프로젝트가 없어요 ✦<br>
+      <span style="color: var(--text-muted); font-size: 12px; margin-top: 8px; display: block;">오른쪽 아래 + 버튼으로 추가해보세요</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- FAB -->
+<button class="add-fab" id="addBtn" title="프로젝트 추가">+</button>
+
+<!-- ═══════════════════════════════════
+     PROJECT DETAIL VIEW
+═══════════════════════════════════ -->
+<div id="detailView">
+  <div class="detail-inner">
+    <button class="detail-back" id="detailBack">← back to works</button>
+
+    <div class="detail-eyebrow">
+      <span>✦ project</span>
+      <div class="detail-tags" id="detailTags"></div>
+    </div>
+
+    <div class="detail-title" id="detailTitle">Project Name</div>
+
+    <div id="detailHeroWrap"></div>
+
+    <div class="detail-divider"></div>
+
+    <div class="detail-desc-section" id="detailDesc"></div>
+
+    <div id="detailLinkWrap"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     ADD / EDIT MODAL
+═══════════════════════════════════ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitleText">add project</div>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">썸네일 이미지</label>
+      <div class="thumb-upload" id="thumbUpload">
+        <div class="thumb-upload-icon">📸</div>
+        <div class="thumb-upload-label">클릭해서 이미지 업로드</div>
+        <img id="thumbPreview" src="" alt="" style="display:none">
+      </div>
+      <input type="file" id="thumbInput" accept="image/*" style="display:none">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">프로젝트 이름 *</label>
+      <input class="form-input" id="inputName" placeholder="예: Planit" type="text">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">URL</label>
+      <input class="form-input" id="inputUrl" placeholder="https://..." type="url">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">설명</label>
+      <textarea class="form-textarea" id="inputDesc" placeholder="어떤 프로젝트인지 설명해주세요&#10;&#10;줄바꿈 하면 자동으로 불릿포인트로 나뉩니다.&#10;예:&#10;사용자 여정 분석 및 전략 수립&#10;경쟁사 벤치마킹"></textarea>
+      <div class="form-hint">↵ 줄바꿈 = 불릿포인트로 자동 분리</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">태그 (쉼표로 구분)</label>
+      <input class="form-input" id="inputTags" placeholder="예: Strategy, Research, UX">
+    </div>
+
+    <button class="form-submit" id="formSubmit">추가하기</button>
+  </div>
+</div>
+
+<script>
+(function() {
+
+  /* ─── STATE ─── */
+  let projects = JSON.parse(localStorage.getItem('myworks_v2') || '[]');
+  let profile = JSON.parse(localStorage.getItem('myworks_profile') || '{}');
+  let activeTag = 'all';
+  let thumbData = '';
+  let editingId = null;
+
+  /* ─── DOM ─── */
+  const grid = document.getElementById('grid');
+  const filterBar = document.getElementById('filterBar');
+  const emptyState = document.getElementById('emptyState');
+  const countBadge = document.getElementById('countBadge');
+  const modalOverlay = document.getElementById('modalOverlay');
+  const thumbUpload = document.getElementById('thumbUpload');
+  const thumbInput = document.getElementById('thumbInput');
+  const thumbPreview = document.getElementById('thumbPreview');
+  const mainView = document.getElementById('mainView');
+  const detailView = document.getElementById('detailView');
+
+  /* ─── SAVE ─── */
+  function save() { localStorage.setItem('myworks_v2', JSON.stringify(projects)); }
+  function saveProfile() { localStorage.setItem('myworks_profile', JSON.stringify(profile)); }
+
+  /* ─── BULLET PARSING ─── */
+  function parseDesc(text) {
+    if (!text) return '';
+    const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+    if (lines.length <= 1) return `<span>${lines[0] || ''}</span>`;
+    return lines.map(l =>
+      `<div class="bullet-line"><span class="bullet-dot">▸</span><span>${l}</span></div>`
+    ).join('');
+  }
+
+  function parseDescDetail(text) {
+    if (!text) return '';
+    const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+    if (lines.length <= 1) {
+      return `<p class="detail-plain-text">${lines[0] || ''}</p>`;
+    }
+    return lines.map(l =>
+      `<div class="detail-bullet"><span class="detail-bullet-dot">▸</span><span class="detail-bullet-text">${l}</span></div>`
+    ).join('');
+  }
+
+  /* ─── FILTERS ─── */
+  function getAllTags() {
+    const s = new Set();
+    projects.forEach(p => (p.tags||[]).forEach(t => s.add(t)));
+    return [...s];
+  }
+
+  function renderFilters() {
+    filterBar.querySelectorAll('.tag-btn:not([data-tag="all"])').forEach(b => b.remove());
+    getAllTags().forEach(tag => {
+      const btn = document.createElement('button');
+      btn.className = 'tag-btn' + (activeTag === tag ? ' active' : '');
+      btn.dataset.tag = tag;
+      btn.textContent = tag;
+      btn.addEventListener('click', () => setFilter(tag));
+      filterBar.appendChild(btn);
+    });
+    filterBar.querySelector('[data-tag="all"]').className = 'tag-btn' + (activeTag === 'all' ? ' active' : '');
+  }
+
+  function setFilter(tag) { activeTag = tag; renderFilters(); renderCards(); }
+
+  /* ─── CARDS ─── */
+  function renderCards() {
+    grid.querySelectorAll('.card').forEach(c => c.remove());
+
+    const filtered = activeTag === 'all'
+      ? projects
+      : projects.filter(p => (p.tags||[]).includes(activeTag));
+
+    emptyState.style.display = filtered.length === 0 ? 'block' : 'none';
+    countBadge.textContent = projects.length + ' project' + (projects.length !== 1 ? 's' : '');
+
+    filtered.forEach((p, i) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.style.animationDelay = (i * 0.06) + 's';
+      card.dataset.id = p.id;
+
+      const tagsHtml = (p.tags||[]).map(t => `<span class="card-tag">${t}</span>`).join('');
+      const thumbHtml = p.thumb
+        ? `<div class="card-thumb"><img src="${p.thumb}" alt="${p.name}" loading="lazy"></div>`
+        : `<div class="thumb-placeholder">${(p.name||'?')[0]}</div>`;
+
+      card.innerHTML = `
+        <button class="card-edit" title="수정">✎</button>
+        <button class="card-delete" title="삭제">✕</button>
+        ${thumbHtml}
+        <div class="card-body">
+          <div class="card-meta">
+            <div class="card-tags">${tagsHtml}</div>
+            <span class="card-arrow">↗</span>
+          </div>
+          <div class="card-title">${p.name}</div>
+          ${p.desc ? `<div class="card-desc">${parseDesc(p.desc)}</div>` : ''}
+        </div>
+      `;
+
+      /* click card → detail view */
+      card.addEventListener('click', e => {
+        if (e.target.closest('.card-delete') || e.target.closest('.card-edit')) return;
+        openDetail(p);
+      });
+
+      /* delete */
+      card.querySelector('.card-delete').addEventListener('click', e => {
+        e.stopPropagation();
+        if (confirm(`"${p.name}" 를 삭제할까요?`)) {
+          projects = projects.filter(x => x.id !== p.id);
+          save();
+          render();
+        }
+      });
+
+      /* edit */
+      card.querySelector('.card-edit').addEventListener('click', e => {
+        e.stopPropagation();
+        openEditModal(p);
+      });
+
+      grid.appendChild(card);
+    });
+  }
+
+  function render() { renderFilters(); renderCards(); }
+
+  /* ─── DETAIL VIEW ─── */
+  function openDetail(p) {
+    document.getElementById('detailTitle').textContent = p.name;
+
+    const tagsEl = document.getElementById('detailTags');
+    tagsEl.innerHTML = (p.tags||[]).map(t => `<span class="detail-tag">${t}</span>`).join('');
+
+    const heroWrap = document.getElementById('detailHeroWrap');
+    if (p.thumb) {
+      heroWrap.innerHTML = `<div class="detail-hero"><img src="${p.thumb}" alt="${p.name}"></div>`;
+    } else {
+      heroWrap.innerHTML = `<div class="detail-hero-placeholder">${(p.name||'?')[0]}</div>`;
+    }
+
+    document.getElementById('detailDesc').innerHTML = parseDescDetail(p.desc || '');
+
+    const linkWrap = document.getElementById('detailLinkWrap');
+    if (p.url) {
+      linkWrap.innerHTML = `<a class="detail-link" href="${p.url}" target="_blank" rel="noopener">↗ 프로젝트 바로가기</a>`;
+    } else {
+      linkWrap.innerHTML = '';
+    }
+
+    /* transition: main out → detail in */
+    mainView.classList.add('page-exit');
+    detailView.scrollTop = 0;
+    setTimeout(() => {
+      detailView.classList.add('open');
+    }, 50);
+  }
+
+  function closeDetail() {
+    detailView.classList.remove('open');
+    setTimeout(() => {
+      mainView.classList.remove('page-exit');
+    }, 400);
+  }
+
+  document.getElementById('detailBack').addEventListener('click', closeDetail);
+
+  /* ─── FILTER ALL BTN ─── */
+  filterBar.querySelector('[data-tag="all"]').addEventListener('click', () => setFilter('all'));
+
+  /* ─── MODAL OPEN/CLOSE ─── */
+  document.getElementById('addBtn').addEventListener('click', () => openAddModal());
+
+  function openAddModal() {
+    editingId = null;
+    document.getElementById('modalTitleText').textContent = 'add project';
+    document.getElementById('formSubmit').textContent = '추가하기';
+    resetForm();
+    modalOverlay.classList.add('open');
+    document.getElementById('inputName').focus();
+  }
+
+  function openEditModal(p) {
+    editingId = p.id;
+    document.getElementById('modalTitleText').textContent = 'edit project';
+    document.getElementById('formSubmit').textContent = '저장하기';
+    document.getElementById('inputName').value = p.name || '';
+    document.getElementById('inputUrl').value = p.url || '';
+    document.getElementById('inputDesc').value = p.desc || '';
+    document.getElementById('inputTags').value = (p.tags||[]).join(', ');
+    thumbData = p.thumb || '';
+    if (thumbData) {
+      thumbPreview.src = thumbData;
+      thumbPreview.style.display = 'block';
+    } else {
+      thumbPreview.style.display = 'none';
+    }
+    modalOverlay.classList.add('open');
+  }
+
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
+
+  function closeModal() { modalOverlay.classList.remove('open'); resetForm(); }
+
+  function resetForm() {
+    document.getElementById('inputName').value = '';
+    document.getElementById('inputUrl').value = '';
+    document.getElementById('inputDesc').value = '';
+    document.getElementById('inputTags').value = '';
+    thumbData = '';
+    thumbPreview.style.display = 'none';
+    thumbPreview.src = '';
+    editingId = null;
+  }
+
+  /* ─── THUMBNAIL UPLOAD ─── */
+  thumbUpload.addEventListener('click', () => thumbInput.click());
+  thumbInput.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      thumbData = ev.target.result;
+      thumbPreview.src = thumbData;
+      thumbPreview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  /* ─── FORM SUBMIT (add / edit) ─── */
+  document.getElementById('formSubmit').addEventListener('click', () => {
+    const name = document.getElementById('inputName').value.trim();
+    const url = document.getElementById('inputUrl').value.trim();
+    const desc = document.getElementById('inputDesc').value.trim();
+    const rawTags = document.getElementById('inputTags').value;
+    const tags = rawTags.split(',').map(t => t.trim()).filter(Boolean);
+
+    if (!name) { alert('프로젝트 이름을 입력해주세요'); return; }
+
+    if (editingId !== null) {
+      const idx = projects.findIndex(p => p.id === editingId);
+      if (idx !== -1) {
+        projects[idx] = { ...projects[idx], name, url, desc, tags, thumb: thumbData };
+      }
+    } else {
+      projects.unshift({ name, url, desc, tags, thumb: thumbData, id: Date.now() });
+    }
+
+    save();
+    closeModal();
+    render();
+  });
+
+  /* ─── ESC KEY ─── */
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      if (modalOverlay.classList.contains('open')) closeModal();
+      else if (detailView.classList.contains('open')) closeDetail();
+    }
+  });
+
+  /* ─── PRINT ─── */
+  document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+  /* ═══════════════════════════════
+     PROFILE EDITING
+  ═══════════════════════════════ */
+
+  /* avatar */
+  function setupAvatarUpload() {
+    const avatarInput = document.getElementById('avatarInput');
+    const avatarImg = document.getElementById('avatarImg');
+    const avatarPlaceholder = document.getElementById('avatarPlaceholder');
+
+    function clickAvatar() { avatarInput.click(); }
+    avatarPlaceholder.addEventListener('click', clickAvatar);
+    avatarImg.addEventListener('click', clickAvatar);
+
+    avatarInput.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        profile.avatar = ev.target.result;
+        saveProfile();
+        renderAvatar();
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function renderAvatar() {
+    const avatarImg = document.getElementById('avatarImg');
+    const avatarPlaceholder = document.getElementById('avatarPlaceholder');
+    if (profile.avatar) {
+      avatarImg.src = profile.avatar;
+      avatarImg.style.display = 'block';
+      avatarPlaceholder.style.display = 'none';
+    } else {
+      avatarImg.style.display = 'none';
+      avatarPlaceholder.style.display = 'flex';
+    }
+  }
+
+  /* inline text editing helpers */
+  function makeEditable(displayId, inputId, storageKey, onSave) {
+    const display = document.getElementById(displayId);
+    const input = document.getElementById(inputId);
+
+    // load saved
+    if (profile[storageKey]) {
+      display.textContent = profile[storageKey];
+    }
+
+    display.addEventListener('click', () => {
+      input.value = profile[storageKey] || '';
+      display.style.display = 'none';
+      input.style.display = 'block';
+      input.focus();
+      input.select();
+    });
+
+    function commit() {
+      const val = input.value.trim();
+      if (val) {
+        profile[storageKey] = val;
+        display.textContent = val;
+      }
+      input.style.display = 'none';
+      display.style.display = display.tagName === 'TEXTAREA' ? '' : 'inline-block';
+      saveProfile();
+      if (onSave) onSave(val);
+    }
+
+    input.addEventListener('blur', commit);
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && input.tagName !== 'TEXTAREA') commit();
+      if (e.key === 'Escape') {
+        input.style.display = 'none';
+        display.style.display = display.tagName === 'TEXTAREA' ? '' : 'inline-block';
+      }
+    });
+  }
+
+  /* name editable — special: has inner <span> */
+  function setupNameEditable() {
+    const display = document.getElementById('profileNameDisplay');
+    const input = document.getElementById('profileNameInput');
+
+    if (profile.name) {
+      display.innerHTML = profile.name;
+    }
+
+    display.addEventListener('click', () => {
+      input.value = profile.name || 'my works';
+      display.style.display = 'none';
+      input.style.display = 'block';
+      input.focus();
+      input.select();
+    });
+
+    function commit() {
+      const val = input.value.trim() || 'my works';
+      profile.name = val;
+      display.innerHTML = val;
+      input.style.display = 'none';
+      display.style.display = 'inline-block';
+      saveProfile();
+    }
+
+    input.addEventListener('blur', commit);
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') commit();
+      if (e.key === 'Escape') { input.style.display = 'none'; display.style.display = 'inline-block'; }
+    });
+  }
+
+  /* bio editable — textarea */
+  function setupBioEditable() {
+    const display = document.getElementById('profileBioDisplay');
+    const input = document.getElementById('profileBioInput');
+
+    if (profile.bio) display.textContent = profile.bio;
+
+    display.addEventListener('click', () => {
+      input.value = profile.bio || '';
+      display.style.display = 'none';
+      input.style.display = 'block';
+      input.focus();
+    });
+
+    function commit() {
+      const val = input.value.trim();
+      if (val) { profile.bio = val; display.textContent = val; }
+      input.style.display = 'none';
+      display.style.display = 'block';
+      saveProfile();
+    }
+
+    input.addEventListener('blur', commit);
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { input.style.display = 'none'; display.style.display = 'block'; }
+    });
+  }
+
+  /* email copy */
+  function setupEmail() {
+    const emailBtn = document.getElementById('emailBtn');
+    const emailBtnText = document.getElementById('emailBtnText');
+    const emailInput = document.getElementById('emailInput');
+
+    if (profile.email) emailBtnText.textContent = profile.email;
+
+    let editMode = false;
+
+    emailBtn.addEventListener('click', () => {
+      if (!profile.email) {
+        // no email set → switch to input mode
+        emailBtn.style.display = 'none';
+        emailInput.style.display = 'block';
+        emailInput.value = '';
+        emailInput.focus();
+        return;
+      }
+      // copy email
+      navigator.clipboard.writeText(profile.email).then(() => {
+        emailBtn.classList.add('copied');
+        emailBtnText.textContent = '✓ mail copied';
+        setTimeout(() => {
+          emailBtn.classList.remove('copied');
+          emailBtnText.textContent = profile.email;
+        }, 2000);
+      }).catch(() => {
+        // fallback
+        const ta = document.createElement('textarea');
+        ta.value = profile.email;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        emailBtn.classList.add('copied');
+        emailBtnText.textContent = '✓ mail copied';
+        setTimeout(() => {
+          emailBtn.classList.remove('copied');
+          emailBtnText.textContent = profile.email;
+        }, 2000);
+      });
+    });
+
+    // long-press or right-click to re-edit email
+    emailBtn.addEventListener('contextmenu', e => {
+      e.preventDefault();
+      emailBtn.style.display = 'none';
+      emailInput.style.display = 'block';
+      emailInput.value = profile.email || '';
+      emailInput.focus();
+    });
+
+    function commitEmail() {
+      const val = emailInput.value.trim();
+      if (val) { profile.email = val; emailBtnText.textContent = val; }
+      emailInput.style.display = 'none';
+      emailBtn.style.display = 'flex';
+      saveProfile();
+    }
+
+    emailInput.addEventListener('blur', commitEmail);
+    emailInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') commitEmail();
+      if (e.key === 'Escape') { emailInput.style.display = 'none'; emailBtn.style.display = 'flex'; }
+    });
+  }
+
+  /* ─── INIT PROFILE ─── */
+  setupAvatarUpload();
+  setupNameEditable();
+  makeEditable('profileRoleDisplay', 'profileRoleInput', 'role');
+  setupBioEditable();
+  setupEmail();
+  renderAvatar();
+
+  if (profile.role) document.getElementById('profileRoleDisplay').textContent = profile.role;
+  if (profile.bio) document.getElementById('profileBioDisplay').textContent = profile.bio;
+
+  /* ─── INITIAL RENDER ─── */
+  render();
+
+})();
+</script>
+</body>
+</html>

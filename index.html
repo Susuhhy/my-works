@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>my works</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0e0e0e;
+    --surface: #161616;
+    --border: #2a2a2a;
+    --border-hover: #444;
+    --text-primary: #f0ede8;
+    --text-secondary: #888;
+    --text-muted: #555;
+    --accent: #c9f97a;
+    --accent-dim: rgba(201,249,122,0.08);
+    --accent-dim2: rgba(201,249,122,0.15);
+    --radius: 16px;
+    --font-serif: 'Instrument Serif', Georgia, serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── 배경 노이즈 텍스처 ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── 헤더 ── */
+  header {
+    position: relative;
+    z-index: 1;
+    padding: 72px 48px 48px;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .header-left {}
+
+  .header-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(48px, 6vw, 80px);
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+  }
+
+  h1 span {
+    color: var(--accent);
+    font-style: normal;
+  }
+
+  .header-sub {
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+  }
+
+  /* ── 태그 필터 ── */
+  .filter-bar {
+    position: relative;
+    z-index: 1;
+    padding: 0 48px 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filter-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-right: 4px;
+  }
+
+  .tag-btn {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 99px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.03em;
+  }
+
+  .tag-btn:hover {
+    border-color: var(--border-hover);
+    color: var(--text-primary);
+  }
+
+  .tag-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #0e0e0e;
+    font-weight: 500;
+  }
+
+  /* ── 그리드 ── */
+  .grid {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 48px 120px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  /* ── 카드 ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.3s, transform 0.3s;
+    animation: fadeUp 0.5s ease both;
+    text-decoration: none;
+    display: block;
+    color: inherit;
+  }
+
+  .card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-4px);
+  }
+
+  .card.hidden { display: none; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* 썸네일 */
+  .card-thumb {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    display: block;
+    background: #1a1a1a;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .card:hover .card-thumb img { transform: scale(1.04); }
+
+  /* 썸네일 없을 때 플레이스홀더 */
+  .thumb-placeholder {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: linear-gradient(135deg, #1a1a1a 0%, #222 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    letter-spacing: -0.02em;
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: #333;
+    transition: color 0.3s;
+  }
+
+  .card:hover .thumb-placeholder { color: #444; }
+
+  /* 카드 바디 */
+  .card-body {
+    padding: 20px 22px 22px;
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .card-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .card-tag {
+    font-size: 10px;
+    padding: 3px 9px;
+    border-radius: 99px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .card-arrow {
+    font-size: 16px;
+    color: var(--text-muted);
+    transition: color 0.2s, transform 0.2s;
+    flex-shrink: 0;
+  }
+
+  .card:hover .card-arrow {
+    color: var(--accent);
+    transform: translate(2px, -2px);
+  }
+
+  .card-title {
+    font-family: var(--font-serif);
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+  }
+
+  .card-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  /* ── 빈 상태 ── */
+  .empty {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 80px 0;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  /* ── 추가 버튼 ── */
+  .add-fab {
+    position: fixed;
+    bottom: 36px;
+    right: 36px;
+    z-index: 100;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #0e0e0e;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 32px rgba(201,249,122,0.25);
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-weight: 300;
+  }
+
+  .add-fab:hover {
+    transform: scale(1.1);
+    box-shadow: 0 12px 40px rgba(201,249,122,0.35);
+  }
+
+  /* ── 모달 ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    backdrop-filter: blur(6px);
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: modalIn 0.25s ease;
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
+
+  .modal-title {
+    font-family: var(--font-serif);
+    font-size: 24px;
+    font-style: italic;
+  }
+
+  .modal-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .modal-close:hover {
+    border-color: var(--border-hover);
+    color: var(--text-primary);
+  }
+
+  .form-group {
+    margin-bottom: 18px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .form-input, .form-textarea {
+    width: 100%;
+    background: #1a1a1a;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 14px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.2s;
+    resize: none;
+  }
+
+  .form-input:focus, .form-textarea:focus {
+    border-color: var(--accent);
+  }
+
+  .form-input::placeholder, .form-textarea::placeholder {
+    color: var(--text-muted);
+  }
+
+  .form-textarea { min-height: 80px; }
+
+  .form-submit {
+    width: 100%;
+    padding: 13px;
+    background: var(--accent);
+    color: #0e0e0e;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: opacity 0.2s;
+    letter-spacing: 0.03em;
+  }
+
+  .form-submit:hover { opacity: 0.88; }
+
+  /* 이미지 업로드 */
+  .thumb-upload {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #1a1a1a;
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color 0.2s;
+    position: relative;
+  }
+
+  .thumb-upload:hover { border-color: var(--border-hover); }
+
+  .thumb-upload img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .thumb-upload-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    position: relative;
+    z-index: 1;
+  }
+
+  .thumb-upload-icon {
+    font-size: 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 카운터 */
+  .count-badge {
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 600px) {
+    header { padding: 48px 24px 32px; }
+    .filter-bar { padding: 0 24px 32px; }
+    .grid { padding: 0 24px 80px; grid-template-columns: 1fr; }
+    .add-fab { bottom: 24px; right: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="header-eyebrow">✦ portfolio</div>
+    <h1>my <span>works</span></h1>
+    <div class="header-sub">내가 만든 것들을 모아두는 곳</div>
+  </div>
+  <div class="count-badge" id="countBadge">0 projects</div>
+</header>
+
+<div class="filter-bar" id="filterBar">
+  <span class="filter-label">filter</span>
+  <button class="tag-btn active" data-tag="all">all</button>
+</div>
+
+<div class="grid" id="grid">
+  <div class="empty" id="emptyState">
+    아직 추가된 프로젝트가 없어요 ✦<br>
+    <span style="color: var(--text-muted); font-size: 12px; margin-top: 8px; display: block;">오른쪽 아래 + 버튼으로 추가해보세요</span>
+  </div>
+</div>
+
+<button class="add-fab" id="addBtn" title="프로젝트 추가">+</button>
+
+<!-- 모달 -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">add project</div>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">썸네일 이미지</label>
+      <div class="thumb-upload" id="thumbUpload">
+        <div class="thumb-upload-icon">📸</div>
+        <div class="thumb-upload-label">클릭해서 이미지 업로드</div>
+        <img id="thumbPreview" src="" alt="" style="display:none">
+      </div>
+      <input type="file" id="thumbInput" accept="image/*" style="display:none">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">사이트 이름 *</label>
+      <input class="form-input" id="inputName" placeholder="예: Planit" type="text">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">URL *</label>
+      <input class="form-input" id="inputUrl" placeholder="https://..." type="url">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">설명</label>
+      <textarea class="form-textarea" id="inputDesc" placeholder="어떤 사이트인지 간단하게 설명해주세요"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">태그 (쉼표로 구분)</label>
+      <input class="form-input" id="inputTags" placeholder="예: 앱, 일정관리, React">
+    </div>
+
+    <button class="form-submit" id="formSubmit">추가하기</button>
+  </div>
+</div>
+
+<script>
+  let projects = JSON.parse(localStorage.getItem('myworks') || '[]');
+  let activeTag = 'all';
+  let thumbData = '';
+
+  const grid = document.getElementById('grid');
+  const filterBar = document.getElementById('filterBar');
+  const emptyState = document.getElementById('emptyState');
+  const countBadge = document.getElementById('countBadge');
+  const modalOverlay = document.getElementById('modalOverlay');
+  const thumbUpload = document.getElementById('thumbUpload');
+  const thumbInput = document.getElementById('thumbInput');
+  const thumbPreview = document.getElementById('thumbPreview');
+
+  function save() {
+    localStorage.setItem('myworks', JSON.stringify(projects));
+  }
+
+  function getAllTags() {
+    const set = new Set();
+    projects.forEach(p => (p.tags || []).forEach(t => set.add(t)));
+    return [...set];
+  }
+
+  function renderFilters() {
+    const tags = getAllTags();
+    const existing = [...filterBar.querySelectorAll('.tag-btn')];
+    existing.forEach(b => { if (b.dataset.tag !== 'all') b.remove(); });
+
+    tags.forEach(tag => {
+      const btn = document.createElement('button');
+      btn.className = 'tag-btn' + (activeTag === tag ? ' active' : '');
+      btn.dataset.tag = tag;
+      btn.textContent = tag;
+      btn.addEventListener('click', () => setFilter(tag));
+      filterBar.appendChild(btn);
+    });
+
+    filterBar.querySelector('[data-tag="all"]').className = 'tag-btn' + (activeTag === 'all' ? ' active' : '');
+  }
+
+  function setFilter(tag) {
+    activeTag = tag;
+    renderFilters();
+    renderCards();
+  }
+
+  function renderCards() {
+    const cards = grid.querySelectorAll('.card');
+    cards.forEach(c => c.remove());
+
+    const filtered = activeTag === 'all'
+      ? projects
+      : projects.filter(p => (p.tags || []).includes(activeTag));
+
+    emptyState.style.display = filtered.length === 0 ? 'block' : 'none';
+    countBadge.textContent = projects.length + ' project' + (projects.length !== 1 ? 's' : '');
+
+    filtered.forEach((p, i) => {
+      const card = document.createElement('a');
+      card.className = 'card';
+      card.href = p.url || '#';
+      card.target = '_blank';
+      card.rel = 'noopener noreferrer';
+      card.style.animationDelay = (i * 0.06) + 's';
+
+      const tagsHtml = (p.tags || []).map(t =>
+        `<span class="card-tag">${t}</span>`
+      ).join('');
+
+      const thumbHtml = p.thumb
+        ? `<div class="card-thumb"><img src="${p.thumb}" alt="${p.name}" loading="lazy"></div>`
+        : `<div class="thumb-placeholder">${p.name[0] || '?'}</div>`;
+
+      card.innerHTML = `
+        ${thumbHtml}
+        <div class="card-body">
+          <div class="card-meta">
+            <div class="card-tags">${tagsHtml}</div>
+            <span class="card-arrow">↗</span>
+          </div>
+          <div class="card-title">${p.name}</div>
+          ${p.desc ? `<div class="card-desc">${p.desc}</div>` : ''}
+        </div>
+      `;
+
+      grid.appendChild(card);
+    });
+  }
+
+  function render() {
+    renderFilters();
+    renderCards();
+  }
+
+  // 필터 all 버튼
+  filterBar.querySelector('[data-tag="all"]').addEventListener('click', () => setFilter('all'));
+
+  // 모달 열기/닫기
+  document.getElementById('addBtn').addEventListener('click', () => {
+    modalOverlay.classList.add('open');
+    document.getElementById('inputName').focus();
+  });
+
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
+
+  function closeModal() {
+    modalOverlay.classList.remove('open');
+    resetForm();
+  }
+
+  function resetForm() {
+    document.getElementById('inputName').value = '';
+    document.getElementById('inputUrl').value = '';
+    document.getElementById('inputDesc').value = '';
+    document.getElementById('inputTags').value = '';
+    thumbData = '';
+    thumbPreview.style.display = 'none';
+    thumbPreview.src = '';
+  }
+
+  // 썸네일 업로드
+  thumbUpload.addEventListener('click', () => thumbInput.click());
+  thumbInput.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      thumbData = ev.target.result;
+      thumbPreview.src = thumbData;
+      thumbPreview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // 폼 제출
+  document.getElementById('formSubmit').addEventListener('click', () => {
+    const name = document.getElementById('inputName').value.trim();
+    const url = document.getElementById('inputUrl').value.trim();
+    const desc = document.getElementById('inputDesc').value.trim();
+    const rawTags = document.getElementById('inputTags').value;
+    const tags = rawTags.split(',').map(t => t.trim()).filter(Boolean);
+
+    if (!name) { alert('사이트 이름을 입력해주세요'); return; }
+    if (!url) { alert('URL을 입력해주세요'); return; }
+
+    projects.unshift({ name, url, desc, tags, thumb: thumbData, id: Date.now() });
+    save();
+    closeModal();
+    render();
+  });
+
+  // ESC 닫기
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  render();
+</script>
+</body>
+</html>

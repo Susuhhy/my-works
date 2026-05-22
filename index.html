@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>my works</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<!-- Firebase SDK -->
+<script type="module" id="firebaseInit">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC0IJLqaRJs5-YwyqMl3xmcCqT5bFHoc9Y",
+    authDomain: "my-works-51e68.firebaseapp.com",
+    projectId: "my-works-51e68",
+    storageBucket: "my-works-51e68.firebasestorage.app",
+    messagingSenderId: "679928759699",
+    appId: "1:679928759699:web:f078be55d03d79f7bb5466",
+    measurementId: "G-K6QPJHPXJ8"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const storage = getStorage(app);
+  const REF = doc(db, 'portfolio', 'main');
+
+  window._fb = { db, storage, REF, setDoc, onSnapshot, getDoc, doc, ref, uploadString, getDownloadURL };
+  window.dispatchEvent(new Event('fbReady'));
+</script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0e0e0e; --surface: #161616; --border: #2a2a2a; --border-hover: #444;
+  --text-primary: #f0ede8; --text-secondary: #888; --text-muted: #555;
+  --accent: #c9f97a; --accent-dim: rgba(201,249,122,0.08); --accent-dim2: rgba(201,249,122,0.15);
+  --radius: 16px; --font-serif: 'Instrument Serif', Georgia, serif; --font-mono: 'DM Mono', monospace;
+}
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text-primary); font-family: var(--font-mono); min-height: 100vh; overflow-x: hidden; }
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0;
+}
+
+/* ── SCROLL FADE-IN ── */
+.reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.55s cubic-bezier(0.22,1,0.36,1), transform 0.55s cubic-bezier(0.22,1,0.36,1); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ── MAIN VIEW ── */
+#mainView { transition: opacity 0.35s ease, transform 0.35s ease; }
+#mainView.page-exit { opacity: 0; transform: translateY(-14px); pointer-events: none; }
+
+/* ── PROFILE ── */
+.profile-section {
+  position: relative; z-index: 1;
+  padding: 56px 48px 40px; max-width: 1200px; margin: 0 auto;
+  border-bottom: 1px solid var(--border);
+}
+.profile-inner { display: flex; align-items: flex-start; gap: 32px; flex-wrap: wrap; }
+.profile-avatar-wrap { flex-shrink: 0; position: relative; }
+.profile-avatar {
+  width: 150px; height: 150px; border-radius: 50%;
+  border: 2px solid var(--border); object-fit: cover; background: #1a1a1a;
+  display: block; cursor: pointer; transition: border-color 0.25s, transform 0.25s;
+}
+.profile-avatar:hover { border-color: var(--accent); transform: scale(1.04); }
+.avatar-edit-hint {
+  position: absolute; bottom: 5px; right: 5px; width: 28px; height: 28px;
+  background: var(--accent); border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; font-size: 13px; color: #0e0e0e; pointer-events: none;
+}
+.avatar-placeholder {
+  width: 150px; height: 150px; border-radius: 50%; border: 2px dashed var(--border);
+  background: #1a1a1a; display: flex; align-items: center; justify-content: center;
+  font-size: 36px; cursor: pointer; transition: border-color 0.2s, transform 0.25s;
+  font-family: var(--font-serif); font-style: italic; color: var(--text-muted);
+}
+.avatar-placeholder:hover { border-color: var(--accent); transform: scale(1.04); }
+.profile-info { flex: 1; min-width: 200px; }
+.profile-eyebrow { font-size: 11px; letter-spacing: 0.15em; color: var(--accent); text-transform: uppercase; margin-bottom: 10px; }
+.profile-name {
+  font-family: var(--font-serif); font-size: clamp(36px, 5vw, 64px); font-weight: 400;
+  font-style: italic; line-height: 1; letter-spacing: -0.02em; color: var(--text-primary);
+  cursor: pointer; display: inline-block; transition: opacity 0.15s;
+}
+.profile-name:hover { opacity: 0.8; }
+.profile-name span { color: var(--accent); font-style: normal; }
+.profile-name-input {
+  font-family: var(--font-serif); font-size: clamp(36px, 5vw, 64px); font-weight: 400;
+  font-style: italic; line-height: 1; letter-spacing: -0.02em; color: var(--text-primary);
+  background: transparent; border: none; border-bottom: 1px solid var(--accent);
+  outline: none; width: 100%; max-width: 500px; display: none;
+}
+.profile-role { margin-top: 10px; font-size: 13px; color: var(--text-secondary); letter-spacing: 0.02em; cursor: pointer; display: inline-block; transition: opacity 0.15s; }
+.profile-role:hover { opacity: 0.7; }
+.profile-role-input { margin-top: 10px; font-size: 13px; color: var(--text-secondary); background: transparent; border: none; border-bottom: 1px solid var(--border); outline: none; font-family: var(--font-mono); letter-spacing: 0.02em; width: 100%; max-width: 400px; display: none; }
+.profile-bio { margin-top: 14px; font-size: 12px; color: var(--text-muted); line-height: 1.8; cursor: pointer; max-width: 560px; display: block; transition: opacity 0.15s; white-space: pre-wrap; }
+.profile-bio:hover { opacity: 0.75; }
+.profile-bio-input { margin-top: 14px; font-size: 12px; color: var(--text-muted); background: #1a1a1a; border: 1px solid var(--border); border-radius: 8px; outline: none; font-family: var(--font-mono); line-height: 1.8; width: 100%; max-width: 560px; padding: 8px 12px; resize: none; display: none; }
+.profile-meta-row { display: flex; align-items: center; gap: 16px; margin-top: 18px; flex-wrap: wrap; }
+.profile-email-btn {
+  font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary);
+  background: transparent; border: 1px solid var(--border); border-radius: 99px;
+  padding: 5px 14px; cursor: pointer; transition: all 0.2s; letter-spacing: 0.03em;
+  display: flex; align-items: center; gap: 6px;
+}
+.profile-email-btn:hover { border-color: var(--accent); color: var(--accent); }
+.profile-email-btn.copied { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+.profile-email-edit { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); background: transparent; border: none; border-bottom: 1px solid var(--border); outline: none; width: 200px; letter-spacing: 0.02em; display: none; }
+.count-badge { font-size: 12px; color: var(--text-muted); letter-spacing: 0.05em; }
+.profile-print-btn { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); background: transparent; border: 1px solid var(--border); border-radius: 99px; padding: 5px 12px; cursor: pointer; transition: all 0.2s; letter-spacing: 0.05em; margin-left: auto; }
+.profile-print-btn:hover { border-color: var(--border-hover); color: var(--text-primary); }
+.save-btn {
+  font-family: var(--font-mono); font-size: 11px; color: #0e0e0e; background: var(--accent);
+  border: none; border-radius: 99px; padding: 5px 14px; cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s; letter-spacing: 0.05em; font-weight: 500;
+}
+.save-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+.edit-hint { font-size: 10px; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 6px; opacity: 0; transition: opacity 0.2s; }
+.profile-info:hover .edit-hint { opacity: 1; }
+
+/* ── FILTER BAR ── */
+.filter-bar { position: relative; z-index: 1; padding: 28px 48px; max-width: 1200px; margin: 0 auto; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; border-bottom: 1px solid var(--border); }
+.filter-label { font-size: 11px; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; margin-right: 4px; }
+.tag-btn { font-family: var(--font-mono); font-size: 12px; padding: 6px 14px; border-radius: 99px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; letter-spacing: 0.03em; }
+.tag-btn:hover { border-color: var(--border-hover); color: var(--text-primary); }
+.tag-btn.active { background: var(--accent); border-color: var(--accent); color: #0e0e0e; font-weight: 500; }
+
+/* ── GRID ── */
+.grid { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 32px 48px 120px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+
+/* ── CARD ── */
+.card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; cursor: pointer;
+  transition: border-color 0.3s, transform 0.35s cubic-bezier(0.22,1,0.36,1), box-shadow 0.35s;
+  text-decoration: none; display: block; color: inherit; position: relative;
+}
+.card:hover { border-color: var(--border-hover); transform: translateY(-6px); box-shadow: 0 20px 56px rgba(0,0,0,0.45); }
+.card.hidden { display: none; }
+.card-thumb { width: 100%; aspect-ratio: 16/9; display: block; background: #1a1a1a; position: relative; overflow: hidden; }
+.card-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+.card:hover .card-thumb img { transform: scale(1.06); }
+.thumb-placeholder { width: 100%; aspect-ratio: 16/9; background: linear-gradient(135deg, #1a1a1a 0%, #222 100%); display: flex; align-items: center; justify-content: center; font-size: 32px; font-family: var(--font-serif); font-style: italic; color: #333; transition: color 0.3s; }
+.card:hover .thumb-placeholder { color: #444; }
+.card-body { padding: 20px 22px 22px; }
+.card-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.card-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.card-tag { font-size: 10px; padding: 3px 9px; border-radius: 99px; border: 1px solid var(--border); color: var(--text-muted); letter-spacing: 0.05em; text-transform: uppercase; }
+.card-arrow { font-size: 16px; color: var(--text-muted); transition: color 0.2s, transform 0.25s; flex-shrink: 0; }
+.card:hover .card-arrow { color: var(--accent); transform: translate(3px, -3px); }
+.card-title { font-family: var(--font-serif); font-size: 22px; font-weight: 400; line-height: 1.2; margin-bottom: 8px; color: var(--text-primary); }
+.card-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.7; }
+.card-desc .bullet-line { display: flex; align-items: flex-start; gap: 7px; }
+.card-desc .bullet-dot { color: var(--accent); flex-shrink: 0; font-size: 9px; margin-top: 3px; }
+.card-desc .blank-line { height: 6px; }
+.card-delete { position: absolute; top: 10px; right: 10px; width: 28px; height: 28px; border-radius: 50%; background: rgba(14,14,14,0.88); border: 1px solid var(--border); color: var(--text-muted); font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s, color 0.2s, border-color 0.2s, transform 0.2s; z-index: 10; backdrop-filter: blur(4px); }
+.card:hover .card-delete { opacity: 1; }
+.card-delete:hover { color: #ff6b6b; border-color: #ff6b6b; transform: scale(1.1); }
+.card-edit { position: absolute; top: 10px; right: 44px; width: 28px; height: 28px; border-radius: 50%; background: rgba(14,14,14,0.88); border: 1px solid var(--border); color: var(--text-muted); font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s, color 0.2s, border-color 0.2s, transform 0.2s; z-index: 10; backdrop-filter: blur(4px); }
+.card:hover .card-edit { opacity: 1; }
+.card-edit:hover { color: var(--accent); border-color: var(--accent); transform: scale(1.1); }
+.empty { grid-column: 1/-1; text-align: center; padding: 80px 0; color: var(--text-muted); font-size: 14px; }
+
+/* ── FAB ── */
+.add-fab {
+  position: fixed; bottom: 36px; right: 36px; z-index: 100; width: 56px; height: 56px;
+  border-radius: 50%; background: var(--accent); color: #0e0e0e; border: none; font-size: 24px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 32px rgba(201,249,122,0.25);
+  transition: transform 0.25s cubic-bezier(0.22,1,0.36,1), box-shadow 0.25s; font-weight: 300;
+}
+.add-fab:hover { transform: scale(1.12) rotate(90deg); box-shadow: 0 14px 42px rgba(201,249,122,0.38); }
+
+/* ── MODAL ── */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.72); z-index: 200; backdrop-filter: blur(7px); align-items: center; justify-content: center; padding: 24px; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 32px; width: 100%; max-width: 520px; max-height: 92vh; overflow-y: auto; animation: modalIn 0.28s cubic-bezier(0.22,1,0.36,1); }
+@keyframes modalIn { from { opacity: 0; transform: scale(0.94) translateY(12px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+.modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+.modal-title { font-family: var(--font-serif); font-size: 24px; font-style: italic; }
+.modal-close { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.modal-close:hover { border-color: var(--border-hover); color: var(--text-primary); }
+.form-group { margin-bottom: 18px; }
+.form-label { display: block; font-size: 11px; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+.form-input, .form-textarea { width: 100%; background: #1a1a1a; border: 1px solid var(--border); border-radius: 10px; padding: 11px 14px; font-family: var(--font-mono); font-size: 13px; color: var(--text-primary); outline: none; transition: border-color 0.2s; resize: none; }
+.form-input:focus, .form-textarea:focus { border-color: var(--accent); }
+.form-input::placeholder, .form-textarea::placeholder { color: var(--text-muted); }
+.form-textarea { min-height: 110px; line-height: 1.7; }
+.form-hint { font-size: 10px; color: var(--text-muted); margin-top: 5px; letter-spacing: 0.03em; }
+.form-submit { width: 100%; padding: 13px; background: var(--accent); color: #0e0e0e; border: none; border-radius: 10px; font-family: var(--font-mono); font-size: 13px; font-weight: 500; cursor: pointer; margin-top: 8px; transition: opacity 0.2s, transform 0.15s; letter-spacing: 0.03em; }
+.form-submit:hover { opacity: 0.88; transform: translateY(-1px); }
+.thumb-upload { width: 100%; aspect-ratio: 16/9; background: #1a1a1a; border: 1px dashed var(--border); border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; cursor: pointer; overflow: hidden; transition: border-color 0.2s; position: relative; }
+.thumb-upload:hover { border-color: var(--border-hover); }
+.thumb-upload-label { font-size: 12px; color: var(--text-muted); position: relative; z-index: 1; }
+.thumb-upload-icon { font-size: 24px; position: relative; z-index: 1; }
+
+/* image slider in upload area */
+.thumb-slider-wrap { position: relative; width: 100%; aspect-ratio: 16/9; background: #1a1a1a; border: 1px dashed var(--border); border-radius: 10px; overflow: hidden; }
+.thumb-slides { display: flex; width: 100%; height: 100%; transition: transform 0.35s cubic-bezier(0.22,1,0.36,1); }
+.thumb-slide { flex: 0 0 100%; height: 100%; position: relative; }
+.thumb-slide img { width: 100%; height: 100%; object-fit: cover; }
+.thumb-slide-del { position: absolute; top: 6px; right: 6px; width: 24px; height: 24px; border-radius: 50%; background: rgba(14,14,14,0.85); border: 1px solid #555; color: #ccc; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: color 0.2s; }
+.thumb-slide-del:hover { color: #ff6b6b; border-color: #ff6b6b; }
+.slider-nav { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; }
+.slider-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.3); cursor: pointer; transition: background 0.2s; }
+.slider-dot.active { background: var(--accent); }
+.slider-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; background: rgba(14,14,14,0.7); border: 1px solid #444; border-radius: 50%; color: #ccc; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: color 0.2s; backdrop-filter: blur(3px); }
+.slider-arrow:hover { color: var(--accent); }
+.slider-arrow.prev { left: 8px; }
+.slider-arrow.next { right: 8px; }
+.thumb-add-more { position: absolute; bottom: 8px; right: 8px; font-size: 10px; background: rgba(14,14,14,0.8); border: 1px solid #444; border-radius: 99px; padding: 3px 10px; color: #888; cursor: pointer; transition: color 0.2s, border-color 0.2s; }
+.thumb-add-more:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ── DETAIL VIEW ── */
+#detailView {
+  position: fixed; inset: 0; background: var(--bg); z-index: 150;
+  overflow-y: auto; opacity: 0; transform: translateY(28px) scale(0.99);
+  pointer-events: none; transition: opacity 0.42s cubic-bezier(0.22,1,0.36,1), transform 0.42s cubic-bezier(0.22,1,0.36,1);
+}
+#detailView.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: all; }
+.detail-inner { max-width: 860px; margin: 0 auto; padding: 60px 48px 120px; }
+.detail-back { font-size: 12px; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: color 0.2s, gap 0.2s; border: none; background: transparent; font-family: var(--font-mono); padding: 0; margin-bottom: 48px; }
+.detail-back:hover { color: var(--text-primary); gap: 12px; }
+.detail-eyebrow { font-size: 11px; letter-spacing: 0.15em; color: var(--accent); text-transform: uppercase; margin-bottom: 14px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.detail-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.detail-tag { font-size: 10px; padding: 3px 10px; border-radius: 99px; border: 1px solid rgba(201,249,122,0.3); color: var(--accent); letter-spacing: 0.05em; text-transform: uppercase; }
+.detail-title { font-family: var(--font-serif); font-size: clamp(36px, 6vw, 68px); font-weight: 400; font-style: italic; line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 32px; }
+.detail-divider { height: 1px; background: var(--border); margin: 36px 0; }
+
+/* detail image slider */
+.detail-slider-wrap { width: 100%; aspect-ratio: 16/9; border-radius: 14px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 40px; position: relative; background: #1a1a1a; }
+.detail-slides { display: flex; height: 100%; transition: transform 0.45s cubic-bezier(0.22,1,0.36,1); }
+.detail-slide { flex: 0 0 100%; height: 100%; }
+.detail-slide img { width: 100%; height: 100%; object-fit: cover; }
+.detail-slide-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-style: italic; font-size: 48px; color: #2a2a2a; }
+.detail-slider-nav { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; }
+.detail-slider-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.25); cursor: pointer; transition: background 0.2s, transform 0.2s; }
+.detail-slider-dot.active { background: var(--accent); transform: scale(1.2); }
+.detail-slider-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; background: rgba(14,14,14,0.75); border: 1px solid #444; border-radius: 50%; color: #ccc; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: color 0.2s, background 0.2s; backdrop-filter: blur(4px); }
+.detail-slider-arrow:hover { color: var(--accent); background: rgba(14,14,14,0.9); }
+.detail-slider-arrow.prev { left: 12px; }
+.detail-slider-arrow.next { right: 12px; }
+
+/* detail desc */
+.detail-section-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; margin-bottom: 14px; transition: border-color 0.2s; }
+.detail-section-box:hover { border-color: var(--border-hover); }
+.detail-section-text { font-size: 13px; color: var(--text-secondary); line-height: 1.85; }
+.detail-section-bullet { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 8px; }
+.detail-section-bullet:last-child { margin-bottom: 0; }
+.detail-bullet-dot { color: var(--accent); font-size: 10px; flex-shrink: 0; margin-top: 5px; }
+.detail-bullet-text { font-size: 13px; color: var(--text-secondary); line-height: 1.85; }
+.detail-link { display: inline-flex; align-items: center; gap: 8px; margin-top: 32px; font-size: 13px; color: var(--accent); text-decoration: none; border: 1px solid rgba(201,249,122,0.3); padding: 10px 20px; border-radius: 99px; transition: all 0.2s; letter-spacing: 0.03em; }
+.detail-link:hover { background: var(--accent-dim); border-color: var(--accent); transform: translateY(-2px); }
+
+/* ── PRINT ── */
+@media print {
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { background: #0e0e0e !important; color: #f0ede8 !important; }
+  body::before { display: none; }
+  .add-fab, .card-delete, .card-edit, #detailView, .profile-print-btn, .save-btn,
+  .filter-bar, .profile-email-edit { display: none !important; }
+  #mainView { display: block !important; opacity: 1 !important; transform: none !important; }
+  .profile-section { padding: 20px 24px 16px; border-bottom: 1px solid #2a2a2a; }
+  .profile-avatar, .avatar-placeholder { width: 60px !important; height: 60px !important; }
+  .profile-name { font-size: 28px !important; }
+  .profile-role { font-size: 10px !important; margin-top: 4px !important; }
+  .profile-bio { font-size: 9px !important; margin-top: 6px !important; }
+  .profile-meta-row { margin-top: 8px !important; }
+
+  /* print header with name */
+  .print-header { display: block !important; }
+
+  .grid {
+    padding: 12px 24px 24px !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+  .card {
+    break-inside: avoid; page-break-inside: avoid;
+    transform: none !important; box-shadow: none !important;
+    border: 1px solid #2a2a2a !important;
+  }
+  .card-thumb, .card-thumb img { aspect-ratio: 16/9 !important; }
+  .thumb-placeholder { aspect-ratio: 16/9 !important; font-size: 20px !important; }
+  .card-body { padding: 10px 12px 12px !important; }
+  .card-title { font-size: 14px !important; margin-bottom: 4px !important; }
+  .card-desc { font-size: 9px !important; line-height: 1.5 !important; }
+  .card-tag { font-size: 8px !important; padding: 2px 6px !important; }
+  .reveal { opacity: 1 !important; transform: none !important; }
+}
+
+.print-header { display: none; font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; text-align: center; padding: 8px 0 4px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .profile-section { padding: 36px 24px 28px; }
+  .profile-inner { gap: 20px; }
+  .profile-avatar, .avatar-placeholder { width: 80px !important; height: 80px !important; }
+  .filter-bar { padding: 20px 24px; }
+  .grid { padding: 24px 24px 80px; grid-template-columns: 1fr; }
+  .add-fab { bottom: 24px; right: 24px; }
+  .detail-inner { padding: 40px 24px 80px; }
+  .profile-meta-row { gap: 10px; }
+  .profile-print-btn { margin-left: 0; }
+}
+@media (max-width: 480px) {
+  .profile-section { padding: 28px 16px 24px; }
+  .filter-bar { padding: 16px; }
+  .grid { padding: 16px 16px 80px; }
+  .detail-inner { padding: 32px 16px 80px; }
+  .modal { padding: 24px 18px; }
+}
+</style>
+</head>
+<body>
+
+<!-- PRINT HEADER (visible only in print) -->
+<div class="print-header" id="printHeader">안수현 웹사이트 포트폴리오</div>
+
+<!-- ══════════════════════════════════════
+     MAIN VIEW
+══════════════════════════════════════ -->
+<div id="mainView">
+
+  <div class="profile-section reveal" id="profileSection">
+    <div class="profile-inner">
+      <div class="profile-avatar-wrap" id="avatarWrap">
+        <div class="avatar-placeholder" id="avatarPlaceholder" title="클릭해서 사진 추가">+</div>
+        <img class="profile-avatar" id="avatarImg" src="" alt="profile" style="display:none" title="클릭해서 사진 변경">
+        <div class="avatar-edit-hint">✎</div>
+        <input type="file" id="avatarInput" accept="image/*" style="display:none">
+      </div>
+      <div class="profile-info">
+        <div class="profile-eyebrow">✦ portfolio</div>
+        <div>
+          <div class="profile-name" id="profileNameDisplay" title="클릭해서 편집">my <span>works</span></div>
+          <input class="profile-name-input" id="profileNameInput" placeholder="이름을 입력하세요" type="text">
+        </div>
+        <div>
+          <div class="profile-role" id="profileRoleDisplay" title="클릭해서 편집">클릭해서 직함/소개를 입력하세요</div>
+          <input class="profile-role-input" id="profileRoleInput" placeholder="예: Strategy Consultant · Seoul" type="text">
+        </div>
+        <div>
+          <div class="profile-bio" id="profileBioDisplay" title="클릭해서 편집">클릭해서 자기소개를 입력하세요</div>
+          <textarea class="profile-bio-input" id="profileBioInput" placeholder="간단한 자기소개를 입력하세요" rows="3"></textarea>
+        </div>
+        <div class="edit-hint">↑ 클릭해서 편집</div>
+        <div class="profile-meta-row">
+          <button class="profile-email-btn" id="emailBtn" title="클릭하면 복사 / 우클릭하면 수정">
+            <span>✉</span><span id="emailBtnText">이메일 추가</span>
+          </button>
+          <input class="profile-email-edit" id="emailInput" placeholder="your@email.com" type="email">
+          <div class="count-badge" id="countBadge">0 projects</div>
+          <button class="save-btn" id="saveFileBtn">↗ 내보내기</button>
+          <button class="profile-print-btn" id="printBtn">⎙ print / PDF</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-bar" id="filterBar">
+    <span class="filter-label">filter</span>
+    <button class="tag-btn active" data-tag="all">all</button>
+  </div>
+
+  <div class="grid" id="grid">
+    <div class="empty" id="emptyState">
+      아직 추가된 프로젝트가 없어요 ✦<br>
+      <span style="color:var(--text-muted);font-size:12px;margin-top:8px;display:block;">오른쪽 아래 + 버튼으로 추가해보세요</span>
+    </div>
+  </div>
+</div>
+
+<button class="add-fab" id="addBtn" title="프로젝트 추가">+</button>
+
+<!-- ══════════════════════════════════════
+     DETAIL VIEW
+══════════════════════════════════════ -->
+<div id="detailView">
+  <div class="detail-inner">
+    <button class="detail-back" id="detailBack">← back to works</button>
+    <div class="detail-eyebrow"><span>✦ project</span><div class="detail-tags" id="detailTags"></div></div>
+    <div class="detail-title" id="detailTitle"></div>
+    <div id="detailSliderWrap"></div>
+    <div class="detail-divider"></div>
+    <div id="detailDescWrap"></div>
+    <div id="detailLinkWrap"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     ADD/EDIT MODAL
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitleText">add project</div>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">이미지 (여러 장 가능)</label>
+      <div id="thumbArea">
+        <div class="thumb-upload" id="thumbUpload">
+          <div class="thumb-upload-icon">📸</div>
+          <div class="thumb-upload-label">클릭해서 이미지 업로드 (복수 선택 가능)</div>
+        </div>
+      </div>
+      <input type="file" id="thumbInput" accept="image/*" multiple style="display:none">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">프로젝트 이름 *</label>
+      <input class="form-input" id="inputName" placeholder="예: Planit" type="text">
+    </div>
+    <div class="form-group">
+      <label class="form-label">URL</label>
+      <input class="form-input" id="inputUrl" placeholder="https://..." type="url">
+    </div>
+    <div class="form-group">
+      <label class="form-label">설명</label>
+      <textarea class="form-textarea" id="inputDesc" placeholder="어떤 프로젝트인지 설명해주세요&#10;&#10;줄바꿈하면 불릿포인트로 분리됩니다&#10;빈 줄은 공백으로 처리됩니다"></textarea>
+      <div class="form-hint">↵ 줄바꿈 = 불릿 / 빈 줄 = 공백 유지</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">태그 (쉼표로 구분)</label>
+      <input class="form-input" id="inputTags" placeholder="예: Strategy, Research, UX">
+    </div>
+    <button class="form-submit" id="formSubmit">추가하기</button>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════
+   DATA — Firebase Firestore (실시간 동기화)
+═══════════════════════════════════════════ */
+var profile = {};
+var projects = [];
+var activeTag = 'all';
+var editingId = null;
+var thumbsData = [];
+var thumbSliderIdx = 0;
+var _suppressRemote = false;
+
+/* ── 로딩 오버레이 ── */
+var _loadingEl = document.createElement('div');
+_loadingEl.id = 'fbLoading';
+_loadingEl.style.cssText = 'position:fixed;inset:0;background:#0e0e0e;z-index:9999;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:13px;color:#555;letter-spacing:0.1em;';
+_loadingEl.textContent = '불러오는 중...';
+document.body.appendChild(_loadingEl);
+
+/* ── Firestore에 저장 ── */
+async function persistData() {
+  if (!window._fb) { console.warn('Firebase not ready'); return; }
+  var REF = window._fb.REF;
+  var setDoc = window._fb.setDoc;
+  var docFn = window._fb.doc;
+  var db = window._fb.db;
+  _suppressRemote = true;
+
+  try {
+    // avatar는 압축 후 profile에 포함해서 저장 (300px/0.7 압축으로 ~50KB)
+    await setDoc(REF, { profile: profile, projects: projects });
+    console.log('저장 성공!');
+  } catch(e) {
+    console.error('Firebase save error:', e);
+    alert('저장 실패: ' + e.message);
+  }
+
+  setTimeout(function() { _suppressRemote = false; }, 1000);
+}
+
+/* ── Firebase 초기화 ── */
+window.addEventListener('fbReady', async function() {
+  var REF = window._fb.REF;
+  var onSnapshot = window._fb.onSnapshot;
+  var getDoc = window._fb.getDoc;
+  var docFn = window._fb.doc;
+  var db = window._fb.db;
+
+  try {
+    var snap = await getDoc(REF);
+    if (snap.exists()) {
+      var d = snap.data();
+      profile = d.profile || {};
+      projects = d.projects || [];
+    }
+    // avatar는 profile 안에 포함되어 있음 (압축 후 저장)
+  } catch(e) {
+    console.error('Firebase load error:', e);
+  }
+
+  _loadingEl.remove();
+  render();
+  setupProfileEditing();
+
+  // 실시간 리스너
+  onSnapshot(REF, function(snap) {
+    if (_suppressRemote) return;
+    if (snap.exists()) {
+      var d = snap.data();
+      profile = d.profile || {};
+      projects = d.projects || [];
+      render();
+      renderAvatar();
+      refreshProfileDisplay();
+    }
+  });
+});
+
+/* ── EXPORT: HTML 파일로 내보내기 (백업용) ── */
+function saveToFile() {
+  const html = document.documentElement.outerHTML;
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'index.html';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById('saveFileBtn').addEventListener('click', saveToFile);
+
+/* ── DOM ── */
+const grid          = document.getElementById('grid');
+const filterBar     = document.getElementById('filterBar');
+const emptyState    = document.getElementById('emptyState');
+const countBadge    = document.getElementById('countBadge');
+const modalOverlay  = document.getElementById('modalOverlay');
+const thumbUpload   = document.getElementById('thumbUpload');
+const thumbInput    = document.getElementById('thumbInput');
+const mainView      = document.getElementById('mainView');
+const detailView    = document.getElementById('detailView');
+
+/* ── SCROLL REVEAL ── */
+function initReveal() {
+  const els = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window)) { els.forEach(e => e.classList.add('visible')); return; }
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('visible'); obs.unobserve(en.target); } });
+  }, { threshold: 0.08 });
+  els.forEach(e => obs.observe(e));
+}
+
+/* ── BULLET PARSER ──
+   empty line → blank spacer  |  non-empty → bullet  |  single line → plain
+*/
+function parseDescCard(text) {
+  if (!text) return '';
+  const lines = text.split('\n');
+  const nonEmpty = lines.filter(l => l.trim() !== '');
+  if (nonEmpty.length <= 1) return `<span>${nonEmpty[0] || ''}</span>`;
+  return lines.map(l => {
+    if (l.trim() === '') return `<div class="blank-line"></div>`;
+    return `<div class="bullet-line"><span class="bullet-dot">▸</span><span>${l.trim()}</span></div>`;
+  }).join('');
+}
+
+function parseDescDetail(text) {
+  if (!text) return '';
+  const lines = text.split('\n');
+  // group consecutive non-empty lines into one box; blank lines separate boxes
+  const groups = [];
+  let cur = [];
+  lines.forEach(l => {
+    if (l.trim() === '') {
+      if (cur.length) { groups.push(cur); cur = []; }
+      groups.push(null); // blank spacer
+    } else {
+      cur.push(l.trim());
+    }
+  });
+  if (cur.length) groups.push(cur);
+
+  return groups.map(g => {
+    if (g === null) return ''; // blank between boxes
+    if (g.length === 1) {
+      return `<div class="detail-section-box">
+        <div class="detail-section-text">${g[0]}</div>
+      </div>`;
+    }
+    const bullets = g.map(line =>
+      `<div class="detail-section-bullet">
+        <span class="detail-bullet-dot">▸</span>
+        <span class="detail-bullet-text">${line}</span>
+      </div>`
+    ).join('');
+    return `<div class="detail-section-box">${bullets}</div>`;
+  }).join('');
+}
+
+/* ── FILTERS ── */
+function getAllTags() {
+  const s = new Set();
+  projects.forEach(p => (p.tags||[]).forEach(t => s.add(t)));
+  return [...s];
+}
+function renderFilters() {
+  filterBar.querySelectorAll('.tag-btn:not([data-tag="all"])').forEach(b => b.remove());
+  getAllTags().forEach(tag => {
+    const btn = document.createElement('button');
+    btn.className = 'tag-btn' + (activeTag === tag ? ' active' : '');
+    btn.dataset.tag = tag;
+    btn.textContent = tag;
+    btn.addEventListener('click', () => setFilter(tag));
+    filterBar.appendChild(btn);
+  });
+  filterBar.querySelector('[data-tag="all"]').className = 'tag-btn' + (activeTag === 'all' ? ' active' : '');
+}
+function setFilter(tag) { activeTag = tag; renderFilters(); renderCards(); }
+
+/* ── CARDS ── */
+function renderCards() {
+  grid.querySelectorAll('.card').forEach(c => c.remove());
+  const filtered = activeTag === 'all' ? projects : projects.filter(p => (p.tags||[]).includes(activeTag));
+  emptyState.style.display = filtered.length === 0 ? 'block' : 'none';
+  countBadge.textContent = projects.length + ' project' + (projects.length !== 1 ? 's' : '');
+
+  filtered.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'card reveal';
+    card.style.transitionDelay = (i * 0.055) + 's';
+    card.dataset.id = p.id;
+
+    const tagsHtml = (p.tags||[]).map(t => `<span class="card-tag">${t}</span>`).join('');
+    const imgs = p.thumbs || (p.thumb ? [p.thumb] : []);
+    let thumbHtml;
+    if (imgs.length) {
+      thumbHtml = `<div class="card-thumb"><img src="${imgs[0]}" alt="${p.name}" loading="lazy"></div>`;
+    } else {
+      thumbHtml = `<div class="thumb-placeholder">${(p.name||'?')[0]}</div>`;
+    }
+
+    card.innerHTML = `
+      <button class="card-edit" title="수정">✎</button>
+      <button class="card-delete" title="삭제">✕</button>
+      ${thumbHtml}
+      <div class="card-body">
+        <div class="card-meta">
+          <div class="card-tags">${tagsHtml}</div>
+          <span class="card-arrow">↗</span>
+        </div>
+        <div class="card-title">${p.name}</div>
+        ${p.desc ? `<div class="card-desc">${parseDescCard(p.desc)}</div>` : ''}
+      </div>
+    `;
+
+    card.addEventListener('click', e => {
+      if (e.target.closest('.card-delete') || e.target.closest('.card-edit')) return;
+      openDetail(p);
+    });
+    card.querySelector('.card-delete').addEventListener('click', e => {
+      e.stopPropagation();
+      if (confirm(`"${p.name}" 를 삭제할까요?`)) { projects = projects.filter(x => x.id !== p.id); persistData(); render(); }
+    });
+    card.querySelector('.card-edit').addEventListener('click', e => {
+      e.stopPropagation(); openEditModal(p);
+    });
+
+    grid.appendChild(card);
+  });
+
+  initReveal();
+}
+
+function render() { renderFilters(); renderCards(); }
+
+/* ── DETAIL SLIDER ── */
+function buildDetailSlider(imgs, name) {
+  const wrap = document.getElementById('detailSliderWrap');
+  if (!imgs.length) {
+    wrap.innerHTML = `<div class="detail-slider-wrap"><div class="detail-slides"><div class="detail-slide"><div class="detail-slide-placeholder">${(name||'?')[0]}</div></div></div></div>`;
+    return;
+  }
+  let idx = 0;
+  const slidesHtml = imgs.map(src => `<div class="detail-slide"><img src="${src}" alt="${name}" loading="lazy"></div>`).join('');
+  const dotsHtml = imgs.length > 1 ? imgs.map((_,i) => `<div class="detail-slider-dot ${i===0?'active':''}" data-i="${i}"></div>`).join('') : '';
+  const arrowsHtml = imgs.length > 1 ? `<button class="detail-slider-arrow prev">‹</button><button class="detail-slider-arrow next">›</button>` : '';
+  wrap.innerHTML = `<div class="detail-slider-wrap">${arrowsHtml}<div class="detail-slides" id="dSlides">${slidesHtml}</div>${imgs.length>1?`<div class="detail-slider-nav" id="dDots">${dotsHtml}</div>`:''}</div>`;
+
+  if (imgs.length <= 1) return;
+
+  function goTo(n) {
+    idx = (n + imgs.length) % imgs.length;
+    wrap.querySelector('#dSlides').style.transform = `translateX(-${idx*100}%)`;
+    wrap.querySelectorAll('.detail-slider-dot').forEach((d,i) => d.classList.toggle('active', i===idx));
+  }
+  wrap.querySelector('.prev').addEventListener('click', () => goTo(idx-1));
+  wrap.querySelector('.next').addEventListener('click', () => goTo(idx+1));
+  wrap.querySelectorAll('.detail-slider-dot').forEach(d => d.addEventListener('click', () => goTo(+d.dataset.i)));
+}
+
+/* ── DETAIL VIEW ── */
+function openDetail(p) {
+  document.getElementById('detailTitle').textContent = p.name;
+  document.getElementById('detailTags').innerHTML = (p.tags||[]).map(t=>`<span class="detail-tag">${t}</span>`).join('');
+
+  const imgs = p.thumbs || (p.thumb ? [p.thumb] : []);
+  buildDetailSlider(imgs, p.name);
+
+  document.getElementById('detailDescWrap').innerHTML = parseDescDetail(p.desc || '');
+
+  const lw = document.getElementById('detailLinkWrap');
+  lw.innerHTML = p.url ? `<a class="detail-link" href="${p.url}" target="_blank" rel="noopener">↗ 프로젝트 바로가기</a>` : '';
+
+  mainView.classList.add('page-exit');
+  detailView.scrollTop = 0;
+  setTimeout(() => detailView.classList.add('open'), 30);
+}
+
+function closeDetail() {
+  detailView.classList.remove('open');
+  setTimeout(() => mainView.classList.remove('page-exit'), 420);
+}
+
+document.getElementById('detailBack').addEventListener('click', closeDetail);
+filterBar.querySelector('[data-tag="all"]').addEventListener('click', () => setFilter('all'));
+
+/* ── MODAL ── */
+document.getElementById('addBtn').addEventListener('click', () => openAddModal());
+
+function openAddModal() {
+  editingId = null;
+  document.getElementById('modalTitleText').textContent = 'add project';
+  document.getElementById('formSubmit').textContent = '추가하기';
+  resetForm();
+  modalOverlay.classList.add('open');
+  document.getElementById('inputName').focus();
+}
+
+function openEditModal(p) {
+  editingId = p.id;
+  document.getElementById('modalTitleText').textContent = 'edit project';
+  document.getElementById('formSubmit').textContent = '저장하기';
+  document.getElementById('inputName').value = p.name || '';
+  document.getElementById('inputUrl').value = p.url || '';
+  document.getElementById('inputDesc').value = p.desc || '';
+  document.getElementById('inputTags').value = (p.tags||[]).join(', ');
+  thumbsData = [...(p.thumbs || (p.thumb ? [p.thumb] : []))];
+  thumbSliderIdx = 0;
+  renderThumbArea();
+  modalOverlay.classList.add('open');
+}
+
+document.getElementById('modalClose').addEventListener('click', closeModal);
+modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
+
+function closeModal() { modalOverlay.classList.remove('open'); resetForm(); }
+
+function resetForm() {
+  document.getElementById('inputName').value = '';
+  document.getElementById('inputUrl').value = '';
+  document.getElementById('inputDesc').value = '';
+  document.getElementById('inputTags').value = '';
+  thumbsData = []; thumbSliderIdx = 0; editingId = null;
+  renderThumbArea();
+}
+
+/* ── THUMBNAIL UPLOAD AREA (multi-image slider) ── */
+function renderThumbArea() {
+  const area = document.getElementById('thumbArea');
+  if (!thumbsData.length) {
+    area.innerHTML = `<div class="thumb-upload" id="thumbUpload"><div class="thumb-upload-icon">📸</div><div class="thumb-upload-label">클릭해서 이미지 업로드 (복수 선택 가능)</div></div>`;
+    document.getElementById('thumbUpload').addEventListener('click', () => thumbInput.click());
+    return;
+  }
+
+  const slidesHtml = thumbsData.map((src, i) =>
+    `<div class="thumb-slide">
+      <img src="${src}" alt="thumb ${i}">
+      <button class="thumb-slide-del" data-i="${i}">✕</button>
+    </div>`
+  ).join('');
+  const dots = thumbsData.map((_, i) => `<div class="slider-dot ${i===thumbSliderIdx?'active':''}" data-i="${i}"></div>`).join('');
+  const arrows = thumbsData.length > 1
+    ? `<button class="slider-arrow prev" id="tPrev">‹</button><button class="slider-arrow next" id="tNext">›</button>` : '';
+
+  area.innerHTML = `
+    <div class="thumb-slider-wrap">
+      ${arrows}
+      <div class="thumb-slides" id="tSlides">${slidesHtml}</div>
+      ${thumbsData.length>1 ? `<div class="slider-nav">${dots}</div>` : ''}
+      <button class="thumb-add-more" id="tAddMore">+ 사진 추가</button>
+    </div>`;
+
+  // position
+  area.querySelector('#tSlides').style.transform = `translateX(-${thumbSliderIdx*100}%)`;
+
+  function goTo(n) {
+    thumbSliderIdx = (n + thumbsData.length) % thumbsData.length;
+    area.querySelector('#tSlides').style.transform = `translateX(-${thumbSliderIdx*100}%)`;
+    area.querySelectorAll('.slider-dot').forEach((d,i) => d.classList.toggle('active', i===thumbSliderIdx));
+  }
+
+  if (thumbsData.length > 1) {
+    area.querySelector('#tPrev').addEventListener('click', () => goTo(thumbSliderIdx-1));
+    area.querySelector('#tNext').addEventListener('click', () => goTo(thumbSliderIdx+1));
+    area.querySelectorAll('.slider-dot').forEach(d => d.addEventListener('click', () => goTo(+d.dataset.i)));
+  }
+  area.querySelectorAll('.thumb-slide-del').forEach(btn => btn.addEventListener('click', e => {
+    e.stopPropagation();
+    thumbsData.splice(+btn.dataset.i, 1);
+    thumbSliderIdx = Math.max(0, thumbSliderIdx - 1);
+    renderThumbArea();
+  }));
+  area.querySelector('#tAddMore').addEventListener('click', () => thumbInput.click());
+}
+
+// initial render
+renderThumbArea();
+
+function compressImage(dataUrl, maxSize, quality, cb) {
+  const img = new Image();
+  img.onload = () => {
+    let w = img.width, h = img.height;
+    if (w > h) { if (w > maxSize) { h = Math.round(h * maxSize / w); w = maxSize; } }
+    else        { if (h > maxSize) { w = Math.round(w * maxSize / h); h = maxSize; } }
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+    cb(canvas.toDataURL('image/jpeg', quality));
+  };
+  img.src = dataUrl;
+}
+
+thumbInput.addEventListener('change', e => {
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
+  let loaded = 0;
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      // 썸네일 압축 (최대 800px, quality 0.75)
+      compressImage(ev.target.result, 800, 0.75, compressed => {
+        thumbsData.push(compressed);
+        loaded++;
+        if (loaded === files.length) {
+          thumbSliderIdx = thumbsData.length - files.length;
+          renderThumbArea();
+        }
+      });
+    };
+    reader.readAsDataURL(file);
+  });
+  thumbInput.value = '';
+});
+
+/* ── FORM SUBMIT ── */
+document.getElementById('formSubmit').addEventListener('click', () => {
+  const name = document.getElementById('inputName').value.trim();
+  const url = document.getElementById('inputUrl').value.trim();
+  const desc = document.getElementById('inputDesc').value; // keep original whitespace
+  const rawTags = document.getElementById('inputTags').value;
+  const tags = rawTags.split(',').map(t => t.trim()).filter(Boolean);
+
+  if (!name) { alert('프로젝트 이름을 입력해주세요'); return; }
+
+  if (editingId !== null) {
+    const idx = projects.findIndex(p => p.id === editingId);
+    if (idx !== -1) projects[idx] = { ...projects[idx], name, url, desc, tags, thumbs: [...thumbsData], thumb: thumbsData[0]||'' };
+  } else {
+    projects.unshift({ name, url, desc, tags, thumbs: [...thumbsData], thumb: thumbsData[0]||'', id: Date.now() });
+  }
+  persistData();
+  closeModal();
+  render();
+});
+
+/* ── ESC ── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (modalOverlay.classList.contains('open')) closeModal();
+    else if (detailView.classList.contains('open')) closeDetail();
+  }
+});
+
+/* ── PRINT ── */
+document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+/* ══════════════════════════════════════════
+   PROFILE EDITING
+══════════════════════════════════════════ */
+function renderAvatar() {
+  const img = document.getElementById('avatarImg');
+  const ph = document.getElementById('avatarPlaceholder');
+  if (profile.avatar) { img.src = profile.avatar; img.style.display = 'block'; ph.style.display = 'none'; }
+  else { img.style.display = 'none'; ph.style.display = 'flex'; }
+}
+
+function setupAvatarUpload() {
+  const inp = document.getElementById('avatarInput');
+  document.getElementById('avatarPlaceholder').addEventListener('click', () => inp.click());
+  document.getElementById('avatarImg').addEventListener('click', () => inp.click());
+  inp.addEventListener('change', e => {
+    const f = e.target.files[0]; if (!f) return;
+    const r = new FileReader();
+    r.onload = ev => {
+      // 이미지 압축 (최대 300x300, quality 0.7) → Firestore 1MB 제한 대응
+      const img = new Image();
+      img.onload = () => {
+        const MAX = 300;
+        const canvas = document.createElement('canvas');
+        let w = img.width, h = img.height;
+        if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
+        else        { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        profile.avatar = canvas.toDataURL('image/jpeg', 0.7);
+        persistData(); renderAvatar();
+      };
+      img.src = ev.target.result;
+    };
+    r.readAsDataURL(f);
+  });
+}
+
+function setupNameEditable() {
+  const disp = document.getElementById('profileNameDisplay');
+  const inp = document.getElementById('profileNameInput');
+  if (profile.name) disp.innerHTML = profile.name;
+  disp.addEventListener('click', () => {
+    inp.value = profile.name || 'my works';
+    disp.style.display = 'none'; inp.style.display = 'block'; inp.focus(); inp.select();
+  });
+  function commit() {
+    const v = inp.value.trim() || 'my works';
+    profile.name = v; disp.innerHTML = v; persistData();
+    inp.style.display = 'none'; disp.style.display = 'inline-block';
+  }
+  inp.addEventListener('blur', commit);
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter') commit();
+    if (e.key === 'Escape') { inp.style.display = 'none'; disp.style.display = 'inline-block'; }
+  });
+}
+
+function setupRoleEditable() {
+  const disp = document.getElementById('profileRoleDisplay');
+  const inp = document.getElementById('profileRoleInput');
+  if (profile.role) disp.textContent = profile.role;
+  disp.addEventListener('click', () => {
+    inp.value = profile.role || '';
+    disp.style.display = 'none'; inp.style.display = 'block'; inp.focus(); inp.select();
+  });
+  function commit() {
+    const v = inp.value.trim();
+    if (v) { profile.role = v; disp.textContent = v; persistData(); }
+    inp.style.display = 'none'; disp.style.display = 'inline-block';
+  }
+  inp.addEventListener('blur', commit);
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter') commit();
+    if (e.key === 'Escape') { inp.style.display = 'none'; disp.style.display = 'inline-block'; }
+  });
+}
+
+function setupBioEditable() {
+  const disp = document.getElementById('profileBioDisplay');
+  const inp = document.getElementById('profileBioInput');
+  if (profile.bio) disp.textContent = profile.bio;
+  disp.addEventListener('click', () => {
+    inp.value = profile.bio || '';
+    disp.style.display = 'none'; inp.style.display = 'block'; inp.focus();
+  });
+  function commit() {
+    const v = inp.value.trim();
+    if (v) { profile.bio = v; disp.textContent = v; persistData(); }
+    inp.style.display = 'none'; disp.style.display = 'block';
+  }
+  inp.addEventListener('blur', commit);
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { inp.style.display = 'none'; disp.style.display = 'block'; }
+  });
+}
+
+function setupEmail() {
+  const btn = document.getElementById('emailBtn');
+  const txt = document.getElementById('emailBtnText');
+  const inp = document.getElementById('emailInput');
+  if (profile.email) txt.textContent = profile.email;
+
+  btn.addEventListener('click', () => {
+    if (!profile.email) { btn.style.display = 'none'; inp.style.display = 'block'; inp.focus(); return; }
+    const copy = (t) => {
+      if (navigator.clipboard) navigator.clipboard.writeText(t).catch(() => fallback(t));
+      else fallback(t);
+    };
+    const fallback = (t) => { const ta = document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); };
+    copy(profile.email);
+    btn.classList.add('copied'); txt.textContent = '✓ mail copied';
+    setTimeout(() => { btn.classList.remove('copied'); txt.textContent = profile.email; }, 2200);
+  });
+  btn.addEventListener('contextmenu', e => {
+    e.preventDefault(); btn.style.display = 'none'; inp.style.display = 'block'; inp.value = profile.email||''; inp.focus();
+  });
+  function commitEmail() {
+    const v = inp.value.trim();
+    if (v) { profile.email = v; txt.textContent = v; persistData(); }
+    inp.style.display = 'none'; btn.style.display = 'flex';
+  }
+  inp.addEventListener('blur', commitEmail);
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter') commitEmail();
+    if (e.key === 'Escape') { inp.style.display = 'none'; btn.style.display = 'flex'; }
+  });
+}
+
+/* ── INIT (Firebase 로드 후 waitForFirebase 안에서 호출됨) ── */
+function setupProfileEditing() {
+  setupAvatarUpload();
+  setupNameEditable();
+  setupRoleEditable();
+  setupBioEditable();
+  setupEmail();
+  renderAvatar();
+}
+
+/* ── 실시간 리스너에서 프로필 표시 갱신 ── */
+function refreshProfileDisplay() {
+  const nameDisp = document.getElementById('profileNameDisplay');
+  const roleDisp = document.getElementById('profileRoleDisplay');
+  const bioDisp = document.getElementById('profileBioDisplay');
+  const emailTxt = document.getElementById('emailBtnText');
+  if (profile.name) nameDisp.innerHTML = profile.name;
+  if (profile.role) roleDisp.textContent = profile.role;
+  if (profile.bio) bioDisp.textContent = profile.bio;
+  if (profile.email) emailTxt.textContent = profile.email;
+}
+
+
+</script>
+</body>
+</html>
